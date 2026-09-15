@@ -1,4 +1,7 @@
-# 1. The story begins
+---
+layout: default
+title: "1. The story begins"
+---
 
 <div class="transcript">
 
