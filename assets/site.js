@@ -2,137 +2,195 @@ document.addEventListener("DOMContentLoaded", () => {
   const noteDefinitions = {};
   const body = document.body;
 
-  const walker = document.createTreeWalker(
-    body,
-    NodeFilter.SHOW_TEXT,
-    null
+  /*
+   * NOTE FORMAT
+   *
+   * Reference:
+   * [[note:maly-bialy-domek|Mały biały domek]]
+   *
+   * Definition:
+   * [[note:maly-bialy-domek]]
+   * A popular Polish tango...
+   */
+
+  /*
+   * 1. Find and store note definitions.
+   *
+   * A definition is expected to appear in its own block,
+   * for example:
+   *
+   * <p>[[note:maly-bialy-domek]]
+   * A popular Polish tango...</p>
+   *
+   * or:
+   *
+   * <p>[[note:maly-bialy-domek]]</p>
+   * <p>A popular Polish tango...</p>
+   */
+
+  const blockElements = Array.from(
+    body.querySelectorAll("p, div, li")
   );
 
-  const textNodes = [];
-  let currentNode;
+  blockElements.forEach((element) => {
+    const text = element.textContent.trim();
 
-  while ((currentNode = walker.nextNode())) {
-    textNodes.push(currentNode);
-  }
-
-  textNodes.forEach((node) => {
-    const text = node.nodeValue;
-
-    if (!text || !text.includes("[note:")) return;
-
-    const match = text.match(
-      /\[note:([a-zA-Z0-9-_]+)\]\s*([\s\S]*)/
+    const inlineDefinition = text.match(
+      /^\[\[note:([a-zA-Z0-9_-]+)\]\]\s*(.+)$/s
     );
 
-    if (!match) return;
+    if (inlineDefinition) {
+      const noteId = inlineDefinition[1];
+      const noteText = inlineDefinition[2].trim();
 
-    const noteId = match[1];
-    const noteText = match[2].trim();
-
-    if (noteText) {
       noteDefinitions[noteId] = noteText;
+      element.remove();
+      return;
     }
 
-    node.nodeValue = "";
+    const standaloneDefinition = text.match(
+      /^\[\[note:([a-zA-Z0-9_-]+)\]\]$/
+    );
+
+    if (standaloneDefinition) {
+      const noteId = standaloneDefinition[1];
+      const next = element.nextElementSibling;
+
+      if (next) {
+        noteDefinitions[noteId] =
+          next.textContent.trim();
+
+        next.remove();
+      }
+
+      element.remove();
+    }
   });
 
   /*
-   * 2. Convert:
+   * 2. Convert note references:
    *
-   * {{note:maly-bialy-domek|Mały biały domek}}
+   * [[note:maly-bialy-domek|Mały biały domek]]
    *
    * into:
    *
-   * <span
-   *   class="note"
-   *   data-note-id="maly-bialy-domek"
-   *   data-note="..."
-   * >
+   * <span class="note"
+   *       data-note-id="maly-bialy-domek">
    *   Mały biały domek
    * </span>
    */
 
-  function convertNoteReferences(element) {
-    const childNodes = Array.from(element.childNodes);
-
-    childNodes.forEach((node) => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        const text = node.nodeValue;
-
-        if (!text || !text.includes("{{note:")) return;
-
-        const fragment = document.createDocumentFragment();
-
-        const pattern =
-          /\{\{note:([a-zA-Z0-9-_]+)\|([^}]+)\}\}/g;
-
-        let lastIndex = 0;
-        let match;
-
-        while ((match = pattern.exec(text)) !== null) {
-          const before = text.slice(lastIndex, match.index);
-
-          if (before) {
-            fragment.appendChild(
-              document.createTextNode(before)
-            );
+  function convertNoteReferences(root) {
+    const walker = document.createTreeWalker(
+      root,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode(node) {
+          if (!node.nodeValue.includes("[[note:")) {
+            return NodeFilter.FILTER_REJECT;
           }
 
-          const noteId = match[1];
-          const visibleText = match[2];
+          const parent = node.parentElement;
 
-          const note = document.createElement("span");
+          if (
+            !parent ||
+            parent.classList.contains("note") ||
+            parent.classList.contains("note-tooltip") ||
+            parent.tagName === "SCRIPT" ||
+            parent.tagName === "STYLE"
+          ) {
+            return NodeFilter.FILTER_REJECT;
+          }
 
-          note.className = "note";
-          note.dataset.noteId = noteId;
-          note.dataset.note =
-            noteDefinitions[noteId] || "";
-          note.textContent = visibleText;
-
-          fragment.appendChild(note);
-
-          lastIndex = pattern.lastIndex;
+          return NodeFilter.FILTER_ACCEPT;
         }
+      }
+    );
 
-        const after = text.slice(lastIndex);
+    const textNodes = [];
+    let node;
 
-        if (after) {
+    while ((node = walker.nextNode())) {
+      textNodes.push(node);
+    }
+
+    textNodes.forEach((textNode) => {
+      const text = textNode.nodeValue;
+
+      const pattern =
+        /\[\[note:([a-zA-Z0-9_-]+)\|([^\]]+)\]\]/g;
+
+      const fragment =
+        document.createDocumentFragment();
+
+      let lastIndex = 0;
+      let match;
+
+      while ((match = pattern.exec(text)) !== null) {
+        const before = text.slice(
+          lastIndex,
+          match.index
+        );
+
+        if (before) {
           fragment.appendChild(
-            document.createTextNode(after)
+            document.createTextNode(before)
           );
         }
 
-        node.replaceWith(fragment);
-      } else if (
-        node.nodeType === Node.ELEMENT_NODE &&
-        !node.classList.contains("note")
-      ) {
-        convertNoteReferences(node);
+        const noteId = match[1];
+        const visibleText = match[2];
+
+        const span =
+          document.createElement("span");
+
+        span.className = "note";
+        span.dataset.noteId = noteId;
+        span.textContent = visibleText;
+
+        fragment.appendChild(span);
+
+        lastIndex = pattern.lastIndex;
       }
+
+      const after = text.slice(lastIndex);
+
+      if (after) {
+        fragment.appendChild(
+          document.createTextNode(after)
+        );
+      }
+
+      textNode.replaceWith(fragment);
     });
   }
 
   convertNoteReferences(body);
 
   /*
-   * 3. Tooltip
+   * 3. Create tooltip.
    */
 
-  const notes = document.querySelectorAll(".note");
+  const notes =
+    document.querySelectorAll(".note");
 
   if (!notes.length) return;
 
-  const tooltip = document.createElement("div");
+  const tooltip =
+    document.createElement("div");
 
   tooltip.className = "note-tooltip";
   tooltip.setAttribute("role", "tooltip");
+  tooltip.setAttribute("aria-hidden", "true");
 
   document.body.appendChild(tooltip);
 
   let activeNote = null;
 
   function positionTooltip(note) {
-    const rect = note.getBoundingClientRect();
+    const rect =
+      note.getBoundingClientRect();
+
     const tooltipRect =
       tooltip.getBoundingClientRect();
 
@@ -146,17 +204,19 @@ document.addEventListener("DOMContentLoaded", () => {
       tooltipRect.height -
       10;
 
+    const margin = 10;
+
     left = Math.max(
-      10,
+      margin,
       Math.min(
         left,
         window.innerWidth -
           tooltipRect.width -
-          10
+          margin
       )
     );
 
-    if (top < 10) {
+    if (top < margin) {
       top = rect.bottom + 10;
     }
 
@@ -165,17 +225,27 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showNote(note) {
-    const noteId = note.dataset.noteId;
+    const noteId =
+      note.dataset.noteId;
+
     const noteText =
-      note.dataset.note ||
       noteDefinitions[noteId];
 
-    if (!noteText) return;
+    if (!noteText) {
+      console.warn(
+        `No definition found for note: ${noteId}`
+      );
+      return;
+    }
 
     activeNote = note;
 
     tooltip.textContent = noteText;
     tooltip.classList.add("visible");
+    tooltip.setAttribute(
+      "aria-hidden",
+      "false"
+    );
 
     requestAnimationFrame(() => {
       positionTooltip(note);
@@ -184,11 +254,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function hideNote() {
     activeNote = null;
+
     tooltip.classList.remove("visible");
+    tooltip.setAttribute(
+      "aria-hidden",
+      "true"
+    );
   }
 
   /*
-   * 4. Mouse, keyboard and touch behaviour
+   * 4. Mouse, keyboard and touch behaviour.
    */
 
   notes.forEach((note) => {
@@ -257,6 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (activeNote) {
         positionTooltip(activeNote);
       }
-    }
+    },
+    true
   );
 });
