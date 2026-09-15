@@ -1,3 +1,8 @@
+---
+layout: default
+title: "Shoah 1985"
+---
+
 **PART FOUR**
 
 **Scenes with Polish-speaking interviewees in Claude Lanzmann’s** ***Shoah*****.**
