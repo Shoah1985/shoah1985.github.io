@@ -6,26 +6,15 @@ document.addEventListener("DOMContentLoaded", () => {
    * NOTE FORMAT
    *
    * Reference:
-   * [[note:maly-bialy-domek|Mały biały domek]]
+   * ((note:maly-bialy-domek|Mały biały domek))
    *
    * Definition:
-   * [[note:maly-bialy-domek]]
+   * ((note:maly-bialy-domek))
    * A popular Polish tango...
    */
 
   /*
    * 1. Find and store note definitions.
-   *
-   * A definition is expected to appear in its own block,
-   * for example:
-   *
-   * <p>[[note:maly-bialy-domek]]
-   * A popular Polish tango...</p>
-   *
-   * or:
-   *
-   * <p>[[note:maly-bialy-domek]]</p>
-   * <p>A popular Polish tango...</p>
    */
 
   const blockElements = Array.from(
@@ -36,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const text = element.textContent.trim();
 
     const inlineDefinition = text.match(
-      /^\[\[note:([a-zA-Z0-9_-]+)\]\]\s*(.+)$/s
+      /^\(\(note:([a-zA-Z0-9_-]+)\)\)\s*(.+)$/s
     );
 
     if (inlineDefinition) {
@@ -49,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const standaloneDefinition = text.match(
-      /^\[\[note:([a-zA-Z0-9_-]+)\]\]$/
+      /^\(\(note:([a-zA-Z0-9_-]+)\)\)$/
     );
 
     if (standaloneDefinition) {
@@ -70,12 +59,11 @@ document.addEventListener("DOMContentLoaded", () => {
   /*
    * 2. Convert note references:
    *
-   * [[note:maly-bialy-domek|Mały biały domek]]
+   * ((note:maly-bialy-domek|Mały biały domek))
    *
    * into:
    *
-   * <span class="note"
-   *       data-note-id="maly-bialy-domek">
+   * <span class="note" data-note-id="maly-bialy-domek">
    *   Mały biały domek
    * </span>
    */
@@ -86,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
       NodeFilter.SHOW_TEXT,
       {
         acceptNode(node) {
-          if (!node.nodeValue.includes("[[note:")) {
+          if (!node.nodeValue.includes("((note:")) {
             return NodeFilter.FILTER_REJECT;
           }
 
@@ -118,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const text = textNode.nodeValue;
 
       const pattern =
-        /\[\[note:([a-zA-Z0-9_-]+)\|([^\]]+)\]\]/g;
+        /\(\(note:([a-zA-Z0-9_-]+)\|(.+?)\)\)/g;
 
       const fragment =
         document.createDocumentFragment();
