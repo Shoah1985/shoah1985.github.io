@@ -1,6 +1,8 @@
 ---
 layout: default
 title: "1. The story begins"
+next_title: "2. Villagers (residents of Chełmno)"
+next_url: "/chapters/02-chelmno-villagers.html"
 ---
 
 # 1. The story begins
@@ -16,4 +18,5 @@ title: "1. The story begins"
 </div>
 
 ((note:maly-bialy-domek))
+
 *‘Mały biały domek’ / A little while house*: A popular Polish tango (1936) famously sang by the lyric baritone Mieczysław Fogg (music: Władysław Gen, lyrics: Zygmunt Lewandowski).
