@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "1. The story begins"
-----------------------------
+---
 
 # 1. The story begins
 
