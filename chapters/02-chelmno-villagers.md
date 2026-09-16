@@ -23,7 +23,7 @@ next_url: "/chapters/03-chelmno-villagers.html"
 
 <div class="en">But not that either (unclear)</div>
 
-<div class="speaker">Ewa Stanek</div>
+<div class="speaker">((note:ewa|Ewa Stanek))</div>
 
 <div class="fr">Il avait treize ans et demi, il avait une belle voix et il chantait d'une façon très belle, et on entendait.</div>
 
@@ -54,3 +54,7 @@ next_url: "/chapters/03-chelmno-villagers.html"
 ((note:chelmno))
 
 *Chełmno* – a village in West-Central Poland (current population 350). During the Second World War it was occupied by Germany and was renamed to *Kulmhof an der Nehr*. The Nazi extermination camp operated there in 1941–1945.
+
+((note:ewa))
+
+*Ewa Stanek* Translator, born in Warsaw, working as an assistant to Barbara Janicka during the filming process in Poland.
