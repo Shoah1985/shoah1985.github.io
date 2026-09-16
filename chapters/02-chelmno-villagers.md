@@ -43,7 +43,7 @@ next_url: "/chapters/03-chelmno-villagers.html"
 
 <div class="pl">(niezrozumiałe)</div>
 
-<div class="en">(Unclear)</div>
+<div class="en">(unclear)</div>
 
 <div class="speaker">Ewa Stanek</div>
 
@@ -57,4 +57,4 @@ next_url: "/chapters/03-chelmno-villagers.html"
 
 ((note:ewa))
 
-*Ewa Stanek* Translator, born in Warsaw, working as an assistant to Barbara Janicka during the filming process in Poland.
+*Ewa Stanek* born in Warsaw, working as an assistant to Barbara Janicka during the filming process in Poland.
