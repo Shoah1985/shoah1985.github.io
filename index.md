@@ -9,7 +9,7 @@ title: "Shoah 1985"
 
 **Transcription and translation into English**
 
-Edited by Roma Sendyka and Magda Heydel
+Edited by R Sendyka and Magda Heydel
 
 **Introductory remarks**
 
