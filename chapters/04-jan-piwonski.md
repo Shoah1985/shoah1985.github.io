@@ -17,8 +17,8 @@ next_url: "/chapters/05-helena-pietyra.html"
 
 <div class="pl">Tutaj… poluje się teraz w tych lasach w Sobiborze?</div>
 
-<div class="en">Here…do they still hunt in the Sobibór woods?</div>
-
+<div class="en">Here… do they still hunt in the Sobibór woods?</div>
+ 
 <div class="speaker">Jan Piwoński</div>
 
 <div class="pl">Tak, na tych, w tych lasach jest dużo zwierzyny, i to zwierzyny czarnej, powiedzmy, i płowej. Stąd myśliwi tu często przyjeżdżają.</div>
